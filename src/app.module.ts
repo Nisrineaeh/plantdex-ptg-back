@@ -46,6 +46,6 @@ import* as  express from 'express';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(express.static('uploads')).forRoutes('uploads/*');
+    consumer.apply(express.static('static/uploads')).forRoutes('uploads/*');
   }
 }

@@ -4,7 +4,7 @@ import { UpdatePlantDto } from './dto/update-plant.dto';
 import { Plant } from './entities/plant.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from 'rxjs';
+
 
 
 @Injectable()
@@ -45,11 +45,8 @@ export class PlantsService {
   }
 
   async createPlantWithImage(plantData: CreatePlantDto, imagePath: string): Promise<Plant> {
-    const newPlant = this.plantsRepository.create({
-      ...plantData,
-      image: imagePath
-    });
-
+    const newPlant = this.plantsRepository.create(plantData);
+    newPlant.image = imagePath;
     return await this.plantsRepository.save(newPlant);
   }
 

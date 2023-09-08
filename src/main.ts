@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import* as express from 'express';
 
 
 async function bootstrap() {
@@ -31,8 +32,10 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   
-  //configurer nest à a voir des fichiers statique
-  app.useStaticAssets(join(__dirname, '..','uploads'))
+  // Configuration d'un chemin pour servir les fichiers statiques (images) depuis le répertoire "uploads"
+  // app.use('/uploads', express.static(join(__dirname, '..', 'uploads'))); // Utilisation de join pour obtenir le chemin absolu du répertoire "uploads"
+
+  app.use('/uploads', express.static('uploads'))
   await app.listen(3000);
 
 }

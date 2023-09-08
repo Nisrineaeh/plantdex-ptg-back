@@ -24,7 +24,7 @@ export class Plant {
     @Column({length: 500})
     categorie : string;
 
-    @Column({ length: 500 })
+    @Column({ length: 500, nullable :true })
     image: string;
 
     @Column({ type:'int', nullable: true})

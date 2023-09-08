@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Res, NotFoundException } from '@nestjs/common';
 import { PlantsService } from './plants.service';
 import { CreatePlantDto } from './dto/create-plant.dto';
 import { UpdatePlantDto } from './dto/update-plant.dto';
@@ -19,23 +19,32 @@ export class PlantsController {
   }
 
   @Get()
-  findAll() {
-    return this.plantsService.findAll();
+  async findAll() {
+    return await this.plantsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.plantsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const found = await this.plantsService.findOne(+id);
+    if (!found) {
+      throw new NotFoundException(`Plante avec l'id numéro ${id} pas trouvé`);
+    }
+    return found;
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlantDto: UpdatePlantDto) {
-    return this.plantsService.update(+id, updatePlantDto);
+  async update(@Param('id') id: string, @Body() updatePlantDto: UpdatePlantDto) {
+    await this.plantsService.update(+id, updatePlantDto);
+    return await this.plantsService.findOne(+id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.plantsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const result = await this.plantsService.remove(+id);
+    if (!result) {
+      throw new NotFoundException(`Plante avec l'id numéro ${id} pas trouvé`);
+    }
+    return result;
   }
 
   @Post('upload')
@@ -43,10 +52,12 @@ export class PlantsController {
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() plantData: CreatePlantDto): Promise<any> {
     console.log(file)
     console.log(plantData);
-    const imagePath = file.path + '.jpg';
+    const imagePath = file.filename;
     const newPlant = await this.plantsService.createPlantWithImage(plantData, imagePath);
     return newPlant;
   }
+
+  
 
   @Get(':imageName')
   async serveImage(@Param('imageName') imageName: string, @Res() res: Response) {
